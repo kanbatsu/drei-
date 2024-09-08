@@ -1,0 +1,27 @@
+---
+title: useScroll
+sourcecode: src/web/ScrollControls.tsx
+---
+
+[//]: # '![](https://img.shields.io/badge/-Dom only-red)'
+
+A small hook allowing user to have information about the scroll inside the ScrollControls
+
+```jsx
+const App = () => {
+  return (
+      <ScrollControls pages={2} infinite>
+            <Wrapper />
+      </ScrollControls>
+  )
+}
+
+const Wrapper = () => {
+  const scroll = useScroll();
+
+  return (<mesh position={[0, scroll.offset, 0]}>
+              <planeGeometry />
+              <meshStandardMaterial envMap={} {} />
+            </mesh>)
+}
+```
