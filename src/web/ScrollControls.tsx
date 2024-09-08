@@ -5,6 +5,7 @@ import { context as fiberContext, RootState, useFrame, useThree } from '@react-t
 import { DomEvent } from '@react-three/fiber/dist/declarations/src/core/events'
 import { easing } from 'maath'
 import { ForwardRefComponent } from '../helpers/ts-utils'
+import { useState } from 'react'
 
 export type ScrollControlsProps = {
   /** Precision, default 0.00001 */
@@ -44,6 +45,7 @@ export type ScrollControlsState = {
   range(from: number, distance: number, margin?: number): number
   curve(from: number, distance: number, margin?: number): number
   visible(from: number, distance: number, margin?: number): boolean
+  direction: number
 }
 
 const context = /* @__PURE__ */ React.createContext<ScrollControlsState>(null!)
@@ -71,6 +73,7 @@ export function ScrollControls({
   const [fixed] = React.useState(() => document.createElement('div'))
   const target = gl.domElement.parentNode! as HTMLElement
   const scroll = React.useRef(0)
+  const [direction, setDirection] = useState(0)
 
   const state = React.useMemo(() => {
     const state = {
@@ -100,6 +103,7 @@ export function ScrollControls({
         const end = start + distance + margin * 2
         return this.offset >= start && this.offset <= end
       },
+      direction,
     }
     return state
   }, [eps, damping, horizontal, pages])
@@ -177,11 +181,13 @@ export function ScrollControls({
         if (infinite) {
           if (!disableScroll) {
             if (current >= scrollThreshold) {
+              setDirection(-1)
               const damp = 1 - state.offset
               el[horizontal ? 'scrollLeft' : 'scrollTop'] = 1
               scroll.current = state.offset = -damp
               disableScroll = true
             } else if (current <= 0) {
+              setDirection(1)
               const damp = 1 + state.offset
               el[horizontal ? 'scrollLeft' : 'scrollTop'] = scrollLength
               scroll.current = state.offset = damp
